@@ -1,0 +1,113 @@
+@using System.Security.Claims
+@model IEnumerable<OnlineCoursePlatform.Models.Course>
+
+@{
+    ViewData["Title"] = "Index";
+    
+    // Pobieramy ID aktualnie zalogowanego użytkownika, aby sprawdzić czy jest zapisany
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
+<h1>Kursy</h1>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info">
+        @TempData["Message"]
+    </div>
+}
+
+<form asp-controller="Courses" asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="searchString" class="form-control" placeholder="Szukaj kursu..." />
+        <button type="submit" class="btn btn-primary">Szukaj</button>
+        <a asp-action="Index" class="btn btn-secondary">Wyczyść</a>
+    </div>
+</form>
+
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Dodaj nowy kurs</a>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>Liczba zapisanych</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                <span class="badge bg-secondary">
+                    @(item.Enrollments?.Count ?? 0)
+                </span>
+            </td>
+            <td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a> 
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a> 
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                }
+                else
+                {
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        bool isEnrolled = item.Enrollments != null && item.Enrollments.Any(e => e.UserId == currentUserId);
+
+                        if (isEnrolled)
+                        {
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Oglądaj Kurs</a>
+            
+                            <form asp-action="Unenroll" method="post" style="display:inline;">
+                                <input type="hidden" name="courseId" value="@item.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Czy na pewno?');">Wypisz się</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Enroll" method="post" style="display:inline;">
+                                <input type="hidden" name="courseId" value="@item.Id" />
+                                <button type="submit" class="btn btn-sm btn-success">Zapisz się</button>
+                            </form>
+                        }
+                    }
+                    else
+                    {
+                        <a href="/Identity/Account/Login" class="btn btn-sm btn-primary">Zaloguj się, aby kupić</a>
+                    }
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
