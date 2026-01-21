@@ -1,8 +1,67 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Strona główna";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="p-5 mb-4 bg-light rounded-3 shadow-sm border" style="background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%); color: white;">
+    <div class="container-fluid py-5">
+        <h1 class="display-4 fw-bold">Witaj w Online Course Platform</h1>
+        <p class="col-md-8 fs-4">
+            Rozwijaj swoje umiejętności dzięki naszym profesjonalnym kursom online. 
+            Ucz się we własnym tempie, gdziekolwiek jesteś.
+        </p>
+        
+        <div class="mt-4">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a asp-controller="Courses" asp-action="Index" class="btn btn-light btn-lg px-4 gap-3">
+                    Przeglądaj Kursy
+                </a>
+                
+                @if (!User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Courses" asp-action="MyCourses" class="btn btn-outline-light btn-lg px-4">
+                        Moje Lekcje
+                    </a>
+                }
+            }
+            else
+            {
+                <a asp-controller="Courses" asp-action="Index" class="btn btn-light btn-lg px-4 gap-3">
+                    Zobacz Ofertę
+                </a>
+                <a href="/Identity/Account/Register" class="btn btn-outline-light btn-lg px-4">
+                    Dołącz do nas
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row align-items-md-stretch mt-5">
+    <div class="col-md-4 mb-3">
+        <div class="h-100 p-5 bg-white border rounded-3 shadow-sm">
+            <h2 class="text-primary">🎓 Ekspercka Wiedza</h2>
+            <p>Nasze kursy tworzone są przez profesjonalistów z branży. Gwarantujemy materiały najwyższej jakości, w tym wideo instruktażowe.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="h-100 p-5 bg-white border rounded-3 shadow-sm">
+            <h2 class="text-success">⏱️ Dostęp 24/7</h2>
+            <p>Kupujesz raz, korzystasz zawsze. Ucz się rano, w nocy, w weekendy. Ty decydujesz, kiedy masz czas na rozwój.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="h-100 p-5 bg-white border rounded-3 shadow-sm">
+            <h2 class="text-info">🚀 Certyfikaty</h2>
+            <p>Po ukończeniu kursu zdobywasz nową wiedzę, która pomoże Ci w rozwoju kariery zawodowej.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12 text-center py-5">
+        <h3 class="mb-3">Dołącz do społeczności uczących się!</h3>
+        <p class="lead text-muted">Zarejestruj się już teraz i zyskaj dostęp do bazy wiedzy.</p>
+        <a asp-controller="Courses" asp-action="Index" class="btn btn-primary btn-lg">Zacznij naukę teraz</a>
+    </div>
 </div>

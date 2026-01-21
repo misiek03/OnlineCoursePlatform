@@ -1,0 +1,43 @@
+@model IEnumerable<OnlineCoursePlatform.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "Moje Kursy";
+}
+
+<h1>Moje Kursy</h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Kurs</th>
+        <th>Kategoria</th>
+        <th>Data zapisu</th>
+        <th>Akcje</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.Category.Name)
+            </td>
+            <td>
+                @item.EnrollmentDate.ToShortDateString()
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.CourseId" class="btn btn-info btn-sm">Przejdź do kursu</a>
+            
+                <form asp-action="Unenroll" method="post" style="display:inline; margin-left: 5px;">
+                    <input type="hidden" name="courseId" value="@item.CourseId" />
+                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Czy na pewno chcesz zrezygnować z tego kursu?');">
+                        Wypisz się
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
